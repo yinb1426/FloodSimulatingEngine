@@ -66,13 +66,14 @@ __global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRa
 
 	double currentRainfallRate = 0.0;
 	double oldWaterHeight = waterHeight[idx];
+	double ratio = 0.0;
 	unsigned int currentLayerNum = int(step / interval);
 
 	if (currentLayerNum >= numRainfallLayer - 1)
 		currentRainfallRate = rainfallRate[(numRainfallLayer - 1) * sizeX * sizeY + idx];
 	else
 	{
-		double ratio = 1.0 * (step % interval) / interval;
+		ratio = (step % interval) / interval * 1.0;
 		currentRainfallRate = rainfallRate[currentLayerNum * sizeX * sizeY + idx] * (1.0 - ratio) + rainfallRate[(currentLayerNum + 1) * sizeX * sizeY + idx] * ratio;
 	}
 
@@ -147,10 +148,10 @@ __global__ void UpdateNewFlowField(FlowField* flowField, FlowField* newFlowField
 	flowField[idx].top    = newFlowField[idx].top;
 	flowField[idx].bottom = newFlowField[idx].bottom;
 
-	newFlowField[idx].left   = 0.0;
-	newFlowField[idx].right  = 0.0;
-	newFlowField[idx].top    = 0.0;
-	newFlowField[idx].bottom = 0.0;
+	//newFlowField[idx].left   = 0.0;
+	//newFlowField[idx].right  = 0.0;
+	//newFlowField[idx].top    = 0.0;
+	//newFlowField[idx].bottom = 0.0;
 }
 
 __global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVelocity, FlowField* flowField,  unsigned int sizeX, unsigned int sizeY,
@@ -163,13 +164,14 @@ __global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVel
 		return;
 	
 	double oldWaterHeight = waterHeight[idx];
-	double deltaV = deltaT * (flowField[iy * sizeX + (ix - 1)].right + flowField[iy * sizeX + (ix + 1)].left + flowField[(iy - 1) * sizeX + ix].bottom + flowField[(iy + 1) * sizeX + ix].top - flowField[idx].left - flowField[idx].right - flowField[idx].top - flowField[idx].bottom);
+	double deltaV = (flowField[iy * sizeX + (ix - 1)].right + flowField[iy * sizeX + (ix + 1)].left + flowField[(iy - 1) * sizeX + ix].bottom + flowField[(iy + 1) * sizeX + ix].top - flowField[idx].left - flowField[idx].right - flowField[idx].top - flowField[idx].bottom) * deltaT;
 	double d2 = oldWaterHeight + deltaV / (pipeLength * pipeLength);
-	double avgWaterHeight = (d2 + oldWaterHeight) * 0.5;
+	double avgWaterHeight = (d2 + oldWaterHeight) / 2.0;
 	double velocityFactor = avgWaterHeight * pipeLength;
 
-	double deltaWX = (flowField[(ix - 1) + iy * sizeX].right - flowField[idx].left + flowField[idx].right - flowField[(ix + 1) + iy * sizeX].left) * 0.5;
-	double deltaWY = (flowField[ix + (iy - 1) * sizeX].bottom + flowField[idx].bottom - flowField[idx].top - flowField[ix + (iy + 1) * sizeY].top) * 0.5;
+	double deltaWX = (flowField[iy * sizeX + (ix - 1)].right + flowField[idx].right - flowField[idx].left - flowField[iy * sizeX + (ix + 1)].left) / 2.0;
+	double deltaWY = (flowField[(iy - 1) * sizeX + ix].bottom + flowField[idx].bottom - flowField[idx].top - flowField[(iy + 1) * sizeX + ix].top) / 2.0;
+
 	double velocityU = 0.0; 
 	double velocityV = 0.0;
 

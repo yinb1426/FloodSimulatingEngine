@@ -57,7 +57,7 @@ public:
 		rainfallRate(_rainfallRate), drainRate(_damHeight), riverInflow(_riverInflow)
 	{
 		deltaT = 0.5;
-		pipeLength = 15;
+		pipeLength = 15.0;
 		gravity = 9.8;
 		Ke = 0.00001;
 		numRainfallLayer = rainfallRate.size() / (sizeX * sizeY);

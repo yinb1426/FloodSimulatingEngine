@@ -82,7 +82,7 @@ void FloodSimulator::RunSimulation(const unsigned int steps)
 	UpdateSurfaceHeight << < dimGrid, dimBlock >> > (gTerrainHeight, gBuildingHeight, gSurfaceHeight, sizeX, sizeY);
 	while (step < steps)
 	{
-		WaterIncrementByRainfall << < dimGrid, dimBlock >> > (gWaterHeight, gRainfallRate, sizeX, sizeY, deltaT, numRainfallLayer, step, 500);
+		WaterIncrementByRainfall << < dimGrid, dimBlock >> > (gWaterHeight, gRainfallRate, sizeX, sizeY, deltaT, numRainfallLayer, step, 3000);
 		UpdateOutputFlowField << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, gSurfaceHeight, gWaterHeight, sizeX, sizeY, deltaT, pipeLength, gravity);
 		UpdateNewFlowField << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, sizeX, sizeY);
 		UpdateWaterVelocityAndHeight << < dimGrid, dimBlock >> > (gWaterHeight, gWaterVelocity, gFlowField, sizeX, sizeY, deltaT, pipeLength);

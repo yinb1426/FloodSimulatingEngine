@@ -55,7 +55,7 @@ int main()
 	end = clock();
 	cout << "计算完成！" << endl;
 	cout << "输出结果..." << endl;
-	WriteHeightMap("E:/Desktop/CUDAResult.txt", fs.waterHeight);
+	//WriteHeightMap("E:/Desktop/CUDAResult2.txt", fs.waterHeight);
 	cout << "输出完成！" << endl;
 	cout << "计算时间：" << (double)(end - start) / CLOCKS_PER_SEC << endl;
 	return 0;
