@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="main.cu">
-      <Filter>源文件</Filter>
-    </CudaCompile>
     <CudaCompile Include="VirtualPipelineModel.cu">
       <Filter>源文件</Filter>
     </CudaCompile>

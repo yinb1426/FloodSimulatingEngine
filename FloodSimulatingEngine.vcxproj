@@ -145,7 +145,6 @@
   <ItemGroup>
     <CudaCompile Include="FloodSimulator.cu" />
     <CudaCompile Include="VirtualPipelineModel.cu" />
-    <CudaCompile Include="main.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FloodSimulator.cuh" />

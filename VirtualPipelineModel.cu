@@ -168,9 +168,8 @@ __global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVel
 	double avgWaterHeight = (d2 + oldWaterHeight) * 0.5;
 	double velocityFactor = avgWaterHeight * pipeLength;
 
-	double deltaWX = (flowField[iy * sizeX + (ix - 1)].right - flowField[idx].left + flowField[idx].right - flowField[iy * sizeX + (ix + 1)].left) * 0.5;
-	double deltaWY = (flowField[(iy - 1) * sizeX + ix].bottom + flowField[idx].bottom + flowField[idx].top - flowField[(iy + 1) * sizeX + ix].top) * 0.5;
-
+	double deltaWX = (flowField[(ix - 1) + iy * sizeX].right - flowField[idx].left + flowField[idx].right - flowField[(ix + 1) + iy * sizeX].left) * 0.5;
+	double deltaWY = (flowField[ix + (iy - 1) * sizeX].bottom + flowField[idx].bottom - flowField[idx].top - flowField[ix + (iy + 1) * sizeY].top) * 0.5;
 	double velocityU = 0.0; 
 	double velocityV = 0.0;
 

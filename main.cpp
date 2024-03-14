@@ -1,35 +1,62 @@
-//#include <iostream>
-//#include <vector>
-//#include <cuda_runtime.h>
-//#include "Utils.h"
-//#include "VirtualPipelineModel.cuh"
-//
-//using namespace std;
-//
-//int main()
-//{
-//	dim3 dimBlock(4, 3);
-//	dim3 dimGrid(1, 1);
-//
-//	unsigned int sizeX = 4, sizeY = 3;
-//
-//	vector<double> A(12);
-//	vector<double> B(12);
-//	double* gA;
-//
-//	cudaMalloc((void**)&gA, sizeof(double) * 12);
-//	cudaMemcpy(gA, &A[0], sizeof(double) * 12, cudaMemcpyHostToDevice);
-//
-//	SetOne << < dimGrid, dimBlock >> > (gA, sizeX, sizeY);
-//
-//	cudaMemcpy(&A[0], gA, sizeof(double) * 12, cudaMemcpyDeviceToHost);
-//
-//	for (int j = 0; j < sizeY; ++j)
-//	{
-//		for (int i = 0; i < sizeX; ++i)
-//			cout << A[j * sizeX + i] << ",";
-//		cout << endl;
-//	}
-//	cudaFree(gA);
-//	return 0;
-//}
+#include <iostream>
+#include <vector>
+#include <string>
+#include <time.h>
+#include "FloodSimulator.cuh"
+#include "VirtualPipelineModel.cuh"
+
+std::vector<double> ReadHeightMap(std::string srcPath)
+{
+	std::vector<double> map;
+	std::ifstream fin(srcPath);
+	double num;
+	while (!fin.eof())
+	{
+		fin >> num;
+		map.push_back(num);
+	}
+	fin.close();
+	return map;
+}
+
+void WriteHeightMap(std::string dstPath, const std::vector<double> map)
+{
+	std::ofstream fout(dstPath);
+	for (auto& num : map)
+		fout << num << std::endl;
+	fout.close();
+}
+
+using namespace std;
+
+int main()
+{
+	unsigned int sizeX = 1405;
+	unsigned int sizeY = 790;
+
+	cout << "加载数据..." << endl;
+	vector<double> terrainHeight = ReadHeightMap("resource/heightmap/terrainHeight.txt");
+	vector<double> rainfallRate = ReadHeightMap("resource/heightmap/rainfallRate.txt");
+	vector<double> riverDepth = ReadHeightMap("resource/heightmap/riverDepth.txt");
+	cout << "加载完成！" << endl;
+
+	vector<double> zeros(sizeX * sizeY);
+	vector<Vec3> zerosVec3(sizeX * sizeY);
+
+	FloodSimulator fs = FloodSimulator(sizeX, sizeY, terrainHeight, zeros, zeros, riverDepth, rainfallRate, zeros, zerosVec3);
+	cout << "开始计算..." << endl;
+	clock_t start, end;
+	start = clock();
+	fs.InitDevice();
+	fs.SendAllDataToDevice();
+	fs.RunSimulation(500);
+	fs.GetResultFromDevice();
+	fs.FreeAllData();
+	end = clock();
+	cout << "计算完成！" << endl;
+	cout << "输出结果..." << endl;
+	WriteHeightMap("E:/Desktop/CUDAResult.txt", fs.waterHeight);
+	cout << "输出完成！" << endl;
+	cout << "计算时间：" << (double)(end - start) / CLOCKS_PER_SEC << endl;
+	return 0;
+}
