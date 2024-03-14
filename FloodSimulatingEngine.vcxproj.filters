@@ -23,15 +23,21 @@
     <CudaCompile Include="main.cu">
       <Filter>源文件</Filter>
     </CudaCompile>
-    <CudaCompile Include="FloodCalculator.cu">
+    <CudaCompile Include="VirtualPipelineModel.cu">
+      <Filter>源文件</Filter>
+    </CudaCompile>
+    <CudaCompile Include="FloodSimulator.cu">
       <Filter>源文件</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FloodCalculator.cuh">
+    <ClInclude Include="VirtualPipelineModel.cuh">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FloodSimulator.cuh">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

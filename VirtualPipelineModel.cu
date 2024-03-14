@@ -1,4 +1,4 @@
-#include "FloodCalculator.cuh"
+#include "VirtualPipelineModel.cuh"
 
 __global__ void InitFlowFields(FlowField* flowField, FlowField* newFlowField, unsigned int sizeX, unsigned int sizeY)
 {
@@ -43,6 +43,16 @@ __global__ void InitVelocity(Vec2* waterVelocity, unsigned int sizeX, unsigned i
 		return;
 	waterVelocity[idx].x = 0.0;
 	waterVelocity[idx].y = 0.0;
+}
+
+__global__ void UpdateSurfaceHeight(double* terrainHeight, double* buildingHeight, double* surfaceHeight, unsigned int sizeX, unsigned int sizeY) 
+{
+	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
+	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
+	unsigned int idx = iy * sizeX + ix;
+	if (idx >= sizeX * sizeY)
+		return;
+	surfaceHeight[idx] = terrainHeight[idx] + buildingHeight[idx];
 }
 
 __global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRate, unsigned int sizeX, unsigned int sizeY,
@@ -203,4 +213,14 @@ __global__ void WaterHeightChangeByDrain(double* waterHeight, double* drainRate,
 		waterHeight[idx] = 0.0;
 	else
 		waterHeight[idx] = newWaterHeight;
+}
+
+__global__ void SetOne(double* A, unsigned int sizeX, unsigned int sizeY)
+{
+	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
+	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
+	unsigned int idx = iy * sizeX + ix;
+	if (idx >= sizeX * sizeY)
+		return;
+	A[idx] = 1.0;
 }

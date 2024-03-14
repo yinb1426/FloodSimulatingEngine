@@ -143,11 +143,13 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="FloodCalculator.cu" />
+    <CudaCompile Include="FloodSimulator.cu" />
+    <CudaCompile Include="VirtualPipelineModel.cu" />
     <CudaCompile Include="main.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FloodCalculator.cuh" />
+    <ClInclude Include="FloodSimulator.cuh" />
+    <ClInclude Include="VirtualPipelineModel.cuh" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
