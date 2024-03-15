@@ -14,6 +14,6 @@ __global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVel
 __global__ void Evaporation(double* waterHeight, unsigned int sizeX, unsigned int sizeY, double Ke, double deltaT);
 __global__ void WaterHeightChangeByDrain(double* waterHeight, double* drainRate, unsigned int sizeX, unsigned int sizeY, double deltaT);
 
-__global__ void SetOne(double* A, unsigned int sizeX, unsigned int sizeY);
+__global__ void SetOne(double* A, const unsigned int sizeX, const unsigned int sizeY);
 
 #endif
