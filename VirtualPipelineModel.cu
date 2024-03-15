@@ -67,16 +67,15 @@ __global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRa
 	double currentRainfallRate = 0.0;
 	double oldWaterHeight = waterHeight[idx];
 	double ratio = 0.0;
-	unsigned int currentLayerNum = int(step / interval);
+	unsigned int currentLayerNum = unsigned int (step / interval);
 
 	if (currentLayerNum >= numRainfallLayer - 1)
 		currentRainfallRate = rainfallRate[(numRainfallLayer - 1) * sizeX * sizeY + idx];
 	else
 	{
-		ratio = (step % interval) / interval * 1.0;
+		ratio = double(step % interval) / double(interval);
 		currentRainfallRate = rainfallRate[currentLayerNum * sizeX * sizeY + idx] * (1.0 - ratio) + rainfallRate[(currentLayerNum + 1) * sizeX * sizeY + idx] * ratio;
 	}
-
 	waterHeight[idx] = oldWaterHeight + deltaT * currentRainfallRate / 600.0;
 }
 
@@ -180,6 +179,7 @@ __global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVel
 		velocityU = deltaWX / velocityFactor;
 		velocityV = deltaWY / velocityFactor;
 	}
+	
 	waterHeight[idx] = d2;
 	waterVelocity[idx].x = velocityU;
 	waterVelocity[idx].y = velocityV;
