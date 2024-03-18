@@ -2,30 +2,36 @@
 #include <vector>
 #include <string>
 #include <time.h>
+
+#include <opencv2/opencv.hpp>  
+#include <opencv2/core/core.hpp>  
+#include <opencv2/highgui/highgui.hpp>  
+#include <opencv2/imgproc.hpp>  
+
 #include "FloodSimulator.cuh"
 #include "VirtualPipelineModel.cuh"
 
-std::vector<double> ReadHeightMap(std::string srcPath)
-{
-	std::vector<double> map;
-	std::ifstream fin(srcPath);
-	double num;
-	while (!fin.eof())
-	{
-		fin >> num;
-		map.push_back(num);
-	}
-	fin.close();
-	return map;
-}
-
-void WriteHeightMap(std::string dstPath, const std::vector<double> map)
-{
-	std::ofstream fout(dstPath);
-	for (double num : map)
-		fout << num << std::endl;
-	fout.close();
-}
+//std::vector<double> ReadHeightMap(std::string srcPath)
+//{
+//	std::vector<double> map;
+//	std::ifstream fin(srcPath);
+//	double num;
+//	while (!fin.eof())
+//	{
+//		fin >> num;
+//		map.push_back(num);
+//	}
+//	fin.close();
+//	return map;
+//}
+//
+//void WriteHeightMap(std::string dstPath, const std::vector<double> map)
+//{
+//	std::ofstream fout(dstPath);
+//	for (double num : map)
+//		fout << num << std::endl;
+//	fout.close();
+//}
 
 using namespace std;
 
@@ -35,9 +41,17 @@ int main()
 	unsigned int sizeY = 790;
 
 	cout << "加载数据..." << endl;
-	vector<double> terrainHeight = ReadHeightMap("resource/heightmap/terrainHeight.txt");
-	vector<double> rainfallRate = ReadHeightMap("resource/heightmap/rainfallRate.txt");
-	vector<double> riverDepth = ReadHeightMap("resource/heightmap/riverDepth.txt");
+	cv::Mat terrainHeightTif = cv::imread("resource/heightmap/FangshanTestArea.tif", cv::IMREAD_UNCHANGED);
+	cv::Mat rainfallRateTif  = cv::imread("resource/heightmap/RainData_0.tif", cv::IMREAD_UNCHANGED);
+	cv::Mat riverDepthTif   = cv::imread("resource/heightmap/RiverDepth60m.tif", cv::IMREAD_UNCHANGED);
+
+	cv::flip(terrainHeightTif, terrainHeightTif, 0);
+	cv::flip(rainfallRateTif, rainfallRateTif, 0);
+	cv::flip(riverDepthTif, riverDepthTif, 0);
+
+	vector<double> terrainHeight = terrainHeightTif.reshape(1, 1);
+	vector<double> rainfallRate = rainfallRateTif.reshape(1, 1);
+	vector<double> riverDepth = riverDepthTif.reshape(1, 1);
 	cout << "加载完成！" << endl;
 
 	vector<double> zeros(sizeX * sizeY);
@@ -49,7 +63,13 @@ int main()
 	start = clock();
 	fs.InitDevice();
 	fs.SendAllDataToDevice();
-	fs.RunSimulation(500);
+	fs.PreparationForSimulaion();
+	int step = 0;
+	while (step < 500)
+	{
+		fs.RunSimulation(step);
+		++step;
+	}
 	fs.GetResultFromDevice();
 	fs.FreeAllData();
 	end = clock();

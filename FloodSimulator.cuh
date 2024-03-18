@@ -83,7 +83,8 @@ public:
 
 	void InitDevice();
 	void SendAllDataToDevice();
-	void RunSimulation(const unsigned int steps);
+	void PreparationForSimulaion();
+	void RunSimulation(const unsigned int step);
 	void GetResultFromDevice();
 	void FreeAllData();
 };

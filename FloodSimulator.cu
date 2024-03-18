@@ -71,24 +71,27 @@ void FloodSimulator::SendAllDataToDevice()
 	cudaMemcpy(gNewFlowField, &newFlowField[0], sizeof(FlowField) * sizeX * sizeY, cudaMemcpyHostToDevice);
 }
 
-void FloodSimulator::RunSimulation(const unsigned int steps)
+void FloodSimulator::PreparationForSimulaion()
 {
 	dim3 dimBlock(32, 16);
 	dim3 dimGrid((sizeX - 1) / dimBlock.x + 1, (sizeY - 1) / dimBlock.y + 1);
-	unsigned int step = 0;
 
 	InitFlowFields << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, sizeX, sizeY);
 	InitVelocity << < dimGrid, dimBlock >> > (gWaterVelocity, sizeX, sizeY);
 	UpdateSurfaceHeight << < dimGrid, dimBlock >> > (gTerrainHeight, gBuildingHeight, gSurfaceHeight, sizeX, sizeY);
-	while (step < steps)
-	{
-		WaterIncrementByRainfall << < dimGrid, dimBlock >> > (gWaterHeight, gRainfallRate, sizeX, sizeY, deltaT, numRainfallLayer, step, 3000);
-		UpdateOutputFlowField << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, gSurfaceHeight, gWaterHeight, sizeX, sizeY, deltaT, pipeLength, gravity);
-		UpdateNewFlowField << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, sizeX, sizeY);
-		UpdateWaterVelocityAndHeight << < dimGrid, dimBlock >> > (gWaterHeight, gWaterVelocity, gFlowField, sizeX, sizeY, deltaT, pipeLength);
-		//Evaporation << < dimGrid, dimBlock >> > (gWaterHeight, sizeX, sizeY, Ke, deltaT);
-		++step;
-	}
+}
+
+void FloodSimulator::RunSimulation(const unsigned int step)
+{
+	dim3 dimBlock(32, 16);
+	dim3 dimGrid((sizeX - 1) / dimBlock.x + 1, (sizeY - 1) / dimBlock.y + 1);
+
+	WaterIncrementByRainfall << < dimGrid, dimBlock >> > (gWaterHeight, gRainfallRate, sizeX, sizeY, deltaT, numRainfallLayer, step, 3000);
+	UpdateOutputFlowField << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, gSurfaceHeight, gWaterHeight, sizeX, sizeY, deltaT, pipeLength, gravity);
+	UpdateNewFlowField << < dimGrid, dimBlock >> > (gFlowField, gNewFlowField, sizeX, sizeY);
+	UpdateWaterVelocityAndHeight << < dimGrid, dimBlock >> > (gWaterHeight, gWaterVelocity, gFlowField, sizeX, sizeY, deltaT, pipeLength);
+	//Evaporation << < dimGrid, dimBlock >> > (gWaterHeight, sizeX, sizeY, Ke, deltaT);
+
 }
 
 void FloodSimulator::GetResultFromDevice()
