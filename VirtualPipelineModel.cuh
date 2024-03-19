@@ -1,19 +1,77 @@
-#ifndef VIRTUAL_PIPELINE_MODEL_CUH
-#define VIRTUAL_PIPELINE_MODEL_CUH
+#pragma once
+#include "Model.h"
 #include "Utils.h"
-#include <cuda_runtime.h>
 
-__global__ void InitFlowFields(FlowField* flowField, FlowField* newFlowField, unsigned int sizeX, unsigned int sizeY);
-__global__ void InitVelocity(Vec2* waterVelocity, unsigned int sizeX, unsigned int sizeY);
-__global__ void UpdateSurfaceHeight(double* terrainHeight, double* buildingHeight,double* surfaceHeight, unsigned int sizeX, unsigned int sizeY);
-__global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRate, unsigned int sizeX, unsigned int sizeY, double deltaT, unsigned int numRainfallLayer, unsigned int step, unsigned int interval);
-__global__ void WaterIncrementByRiverInflow(double* waterHeight, Vec2* waterVelocity, Vec3* riverInflow, unsigned int sizeX, unsigned int sizeY);
-__global__ void UpdateOutputFlowField(FlowField* flowField, FlowField* newFlowField, double* surfaceHeight, double* waterHeight, unsigned int sizeX, unsigned int sizeY, double deltaT, double pipeLength, double gravity);
-__global__ void UpdateNewFlowField(FlowField* flowField, FlowField* newFlowField, unsigned int sizeX, unsigned int sizeY);
-__global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVelocity, FlowField* flowField, unsigned int sizeX, unsigned int sizeY, double deltaT, double pipeLength);
-__global__ void Evaporation(double* waterHeight, unsigned int sizeX, unsigned int sizeY, double Ke, double deltaT);
-__global__ void WaterHeightChangeByDrain(double* waterHeight, double* drainRate, unsigned int sizeX, unsigned int sizeY, double deltaT);
+class VPM final : public Model
+{
+protected:
+	double pipeLength;
+	double gravity;
+	double Ke;
+	unsigned int numRainfallLayer;
+	vector<double> buildingHeight;
+	vector<double> damHeight;
+	vector<double> surfaceHeight;
+	vector<double> rainfallRate;
+	vector<double> drainRate;
+	vector<Vec3> riverInflow;
+	vector<Vec2> waterVelocity;
+	vector<FlowField> flowField;
+	vector<FlowField> newFlowField;
+	double* gBuildingHeight;
+	double* gDamHeight;
+	double* gSurfaceHeight;
+	double* gRainfallRate;
+	double* gDrainRate;
+	Vec3* gRiverInflow;
+	Vec2* gWaterVelocity;
+	FlowField* gFlowField;
+	FlowField* gNewFlowField;
 
-__global__ void SetOne(double* A, const unsigned int sizeX, const unsigned int sizeY);
+public:
+	VPM(unsigned int _sizeX, unsigned int _sizeY, double _deltaT, double _pipeLength, double _gravity, double _Ke,
+		vector<double> _terrainHeight, vector<double> _buildingHeight, vector<double> _damHeight, vector<double> _waterHeight,
+		vector<double> _rainfallRate, vector<double> _drainRate, vector<Vec3> _riverInflow)
+		: Model(_sizeX, _sizeY, _deltaT, _terrainHeight, _waterHeight), pipeLength(_pipeLength), gravity(_gravity), Ke(_Ke),
+		buildingHeight(_buildingHeight), damHeight(_damHeight), rainfallRate(_rainfallRate), drainRate(_damHeight), riverInflow(_riverInflow)
+	{
+		numRainfallLayer = rainfallRate.size() / (sizeX * sizeY);
+		surfaceHeight = vector<double>(sizeX * sizeY);
+		waterVelocity = vector<Vec2>(sizeX * sizeY);
+		flowField = vector<FlowField>(sizeX * sizeY);
+		newFlowField = vector<FlowField>(sizeX * sizeY);
+	}
 
-#endif
+	VPM(int _sizeX, int _sizeY, vector<double> _terrainHeight, vector<double> _buildingHeight, vector<double> _damHeight, vector<double> _waterHeight,
+		vector<double> _rainfallRate, vector<double> _drainRate, vector<Vec3> _riverInflow)
+		: Model(_sizeX, _sizeY, 0.5, _terrainHeight, _waterHeight), buildingHeight(_buildingHeight), damHeight(_damHeight),
+		rainfallRate(_rainfallRate), drainRate(_damHeight), riverInflow(_riverInflow)
+	{
+		deltaT = 0.5;
+		pipeLength = 15.0;
+		gravity = 9.8;
+		Ke = 0.00001;
+		numRainfallLayer = rainfallRate.size() / (sizeX * sizeY);
+		surfaceHeight = vector<double>(sizeX * sizeY);
+		waterVelocity = vector<Vec2>(sizeX * sizeY);
+		flowField = vector<FlowField>(sizeX * sizeY);
+		newFlowField = vector<FlowField>(sizeX * sizeY);
+	}
+
+public:
+	void SetPipeLength(const double newPipeLength);
+	double GetPipeLength() const;
+
+	void SetGravity(const double newGravity);
+	double GetGravity() const;
+
+	void SetKe(const double newKe);
+	double GetKe() const;
+
+	void InitDevice() override final;
+	void SendAllDataToDevice() override final;
+	void PreparationForSimulaion() override final;
+	void RunSimulation(const unsigned int step) override final;
+	void GetResultFromDevice() override final;
+	void FreeAllData() override final;
+};

@@ -18,12 +18,15 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="VirtualPipelineModel.cu">
       <Filter>源文件</Filter>
     </CudaCompile>
-    <CudaCompile Include="FloodSimulator.cu">
+    <CudaCompile Include="VPMCalculator.cu">
       <Filter>源文件</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -34,7 +37,10 @@
     <ClInclude Include="Utils.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="FloodSimulator.cuh">
+    <ClInclude Include="Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VPMCalculator.cuh">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -141,15 +141,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="FloodSimulator.cu" />
     <CudaCompile Include="VirtualPipelineModel.cu" />
+    <CudaCompile Include="VPMCalculator.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FloodSimulator.cuh" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="VirtualPipelineModel.cuh" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="VPMCalculator.cuh" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
