@@ -148,7 +148,10 @@
     <CudaCompile Include="VPMCalculator.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Dam.h" />
+    <ClInclude Include="Drain.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="VirtualPipelineModel.cuh" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VPMCalculator.cuh" />

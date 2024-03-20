@@ -71,7 +71,7 @@ void VPM::PreparationForSimulaion()
 	UpdateSurfaceHeight << < dimGrid, dimBlock >> > (gTerrainHeight, gBuildingHeight, gSurfaceHeight, sizeX, sizeY);
 }
 
-void VPM::RunSimulation(const unsigned int step)
+void VPM::RunSimulation(const size_t step)
 {
 	dim3 dimBlock(32, 16);
 	dim3 dimGrid((sizeX - 1) / dimBlock.x + 1, (sizeY - 1) / dimBlock.y + 1);

@@ -1,10 +1,10 @@
 #include "VPMCalculator.cuh"
 
-__global__ void InitFlowFields(FlowField* flowField, FlowField* newFlowField, unsigned int sizeX, unsigned int sizeY)
+__global__ void InitFlowFields(FlowField* flowField, FlowField* newFlowField, size_t sizeX, size_t sizeY)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 	flowField[idx].left = 0.0;
@@ -17,11 +17,11 @@ __global__ void InitFlowFields(FlowField* flowField, FlowField* newFlowField, un
 	newFlowField[idx].bottom = 0.0;
 }
 
-//__global__ void InitFlowFields(double* flowField, double* newFlowField, unsigned int sizeX, unsigned int sizeY)
+//__global__ void InitFlowFields(double* flowField, double* newFlowField, size_t sizeX, size_t sizeY)
 //{
-//	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-//	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-//	unsigned int idx = iy * sizeX + ix;
+//	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+//	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+//	size_t idx = iy * sizeX + ix;
 //	if (idx >= sizeX * sizeY)
 //		return;
 //	flowField[0 + idx * 4] = idx * 1.0;
@@ -34,40 +34,40 @@ __global__ void InitFlowFields(FlowField* flowField, FlowField* newFlowField, un
 //	newFlowField[3 + idx * 4] = idx * 1.0;
 //}
 
-__global__ void InitVelocity(Vec2* waterVelocity, unsigned int sizeX, unsigned int sizeY)
+__global__ void InitVelocity(Vec2* waterVelocity, size_t sizeX, size_t sizeY)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 	waterVelocity[idx].x = 0.0;
 	waterVelocity[idx].y = 0.0;
 }
 
-__global__ void UpdateSurfaceHeight(double* terrainHeight, double* buildingHeight, double* surfaceHeight, unsigned int sizeX, unsigned int sizeY)
+__global__ void UpdateSurfaceHeight(double* terrainHeight, double* buildingHeight, double* surfaceHeight, size_t sizeX, size_t sizeY)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 	surfaceHeight[idx] = terrainHeight[idx] + buildingHeight[idx];
 }
 
-__global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRate, unsigned int sizeX, unsigned int sizeY,
-	double deltaT, unsigned int numRainfallLayer, unsigned int step, unsigned int interval)
+__global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRate, size_t sizeX, size_t sizeY,
+	double deltaT, size_t numRainfallLayer, size_t step, size_t interval)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 
 	double currentRainfallRate = 0.0;
 	double oldWaterHeight = waterHeight[idx];
 	double ratio = 0.0;
-	unsigned int currentLayerNum = unsigned int(step / interval);
+	size_t currentLayerNum = size_t(step / interval);
 
 	if (currentLayerNum >= numRainfallLayer - 1)
 		currentRainfallRate = rainfallRate[(numRainfallLayer - 1) * sizeX * sizeY + idx];
@@ -79,11 +79,11 @@ __global__ void WaterIncrementByRainfall(double* waterHeight, double* rainfallRa
 	waterHeight[idx] = oldWaterHeight + deltaT * currentRainfallRate / 600.0;
 }
 
-__global__ void WaterIncrementByRiverInflow(double* waterHeight, Vec2* waterVelocity, Vec3* riverInflow, unsigned int sizeX, unsigned int sizeY)
+__global__ void WaterIncrementByRiverInflow(double* waterHeight, Vec2* waterVelocity, Vec3* riverInflow, size_t sizeX, size_t sizeY)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 	if (riverInflow[idx].x >= 0.0)
@@ -94,12 +94,12 @@ __global__ void WaterIncrementByRiverInflow(double* waterHeight, Vec2* waterVelo
 	}
 }
 
-__global__ void UpdateOutputFlowField(FlowField* flowField, FlowField* newFlowField, double* surfaceHeight, double* waterHeight, unsigned int sizeX, unsigned int sizeY,
+__global__ void UpdateOutputFlowField(FlowField* flowField, FlowField* newFlowField, double* surfaceHeight, double* waterHeight, size_t sizeX, size_t sizeY,
 	double deltaT, double pipeLength, double gravity)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY) return;
 	if (!(ix >= 1 && ix < sizeX - 1 && iy >= 1 && iy < sizeY - 1)) return;
 
@@ -135,11 +135,11 @@ __global__ void UpdateOutputFlowField(FlowField* flowField, FlowField* newFlowFi
 	newFlowField[idx].bottom = newOutputFlowBottom;
 }
 
-__global__ void UpdateNewFlowField(FlowField* flowField, FlowField* newFlowField, unsigned int sizeX, unsigned int sizeY)
+__global__ void UpdateNewFlowField(FlowField* flowField, FlowField* newFlowField, size_t sizeX, size_t sizeY)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 
@@ -155,12 +155,12 @@ __global__ void UpdateNewFlowField(FlowField* flowField, FlowField* newFlowField
 	//newFlowField[idx].bottom = 0.0;
 }
 
-__global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVelocity, FlowField* flowField, unsigned int sizeX, unsigned int sizeY,
+__global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVelocity, FlowField* flowField, size_t sizeX, size_t sizeY,
 	double deltaT, double pipeLength)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY) return;
 	if (!(ix >= 1 && ix < sizeX - 1 && iy >= 1 && iy < sizeY - 1)) return;
 
@@ -187,11 +187,11 @@ __global__ void UpdateWaterVelocityAndHeight(double* waterHeight, Vec2* waterVel
 	waterVelocity[idx].y = velocityV;
 }
 
-__global__ void Evaporation(double* waterHeight, unsigned int sizeX, unsigned int sizeY, double Ke, double deltaT)
+__global__ void Evaporation(double* waterHeight, size_t sizeX, size_t sizeY, double Ke, double deltaT)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 
@@ -202,11 +202,11 @@ __global__ void Evaporation(double* waterHeight, unsigned int sizeX, unsigned in
 	else
 		waterHeight[idx] = newWaterHeight;
 }
-__global__ void WaterHeightChangeByDrain(double* waterHeight, double* drainRate, unsigned int sizeX, unsigned int sizeY, double deltaT)
+__global__ void WaterHeightChangeByDrain(double* waterHeight, double* drainRate, size_t sizeX, size_t sizeY, double deltaT)
 {
-	unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
-	unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
-	unsigned int idx = iy * sizeX + ix;
+	size_t ix = threadIdx.x + blockIdx.x * blockDim.x;
+	size_t iy = threadIdx.y + blockIdx.y * blockDim.y;
+	size_t idx = iy * sizeX + ix;
 	if (ix >= sizeX || iy >= sizeY)
 		return;
 
@@ -218,7 +218,7 @@ __global__ void WaterHeightChangeByDrain(double* waterHeight, double* drainRate,
 		waterHeight[idx] = newWaterHeight;
 }
 
-__global__ void SetOne(double* A, const unsigned int sizeX, const unsigned int sizeY)
+__global__ void SetOne(double* A, const size_t sizeX, const size_t sizeY)
 {
 	int ix = threadIdx.x + blockIdx.x * blockDim.x;
 	int iy = threadIdx.y + blockIdx.y * blockDim.y;

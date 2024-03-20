@@ -8,7 +8,7 @@ protected:
 	double pipeLength;
 	double gravity;
 	double Ke;
-	unsigned int numRainfallLayer;
+	size_t numRainfallLayer;
 	vector<double> buildingHeight;
 	vector<double> damHeight;
 	vector<double> surfaceHeight;
@@ -29,7 +29,7 @@ protected:
 	FlowField* gNewFlowField;
 
 public:
-	VPM(unsigned int _sizeX, unsigned int _sizeY, double _deltaT, double _pipeLength, double _gravity, double _Ke,
+	VPM(size_t _sizeX, size_t _sizeY, double _deltaT, double _pipeLength, double _gravity, double _Ke,
 		vector<double> _terrainHeight, vector<double> _buildingHeight, vector<double> _damHeight, vector<double> _waterHeight,
 		vector<double> _rainfallRate, vector<double> _drainRate, vector<Vec3> _riverInflow)
 		: Model(_sizeX, _sizeY, _deltaT, _terrainHeight, _waterHeight), pipeLength(_pipeLength), gravity(_gravity), Ke(_Ke),
@@ -71,7 +71,7 @@ public:
 	void InitDevice() override final;
 	void SendAllDataToDevice() override final;
 	void PreparationForSimulaion() override final;
-	void RunSimulation(const unsigned int step) override final;
+	void RunSimulation(const size_t step) override final;
 	void GetResultFromDevice() override final;
 	void FreeAllData() override final;
 };

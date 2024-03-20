@@ -5,8 +5,8 @@ using namespace std;
 class Model
 {
 protected:
-	unsigned int sizeX;
-	unsigned int sizeY;
+	size_t sizeX;
+	size_t sizeY;
 	double deltaT;
 	vector<double> terrainHeight;
 	vector<double> waterHeight;
@@ -14,16 +14,16 @@ protected:
 	double* gWaterHeight;
 
 public:
-	Model(unsigned int _sizeX, unsigned int _sizeY, double _deltaT, vector<double> _terrainHeight, vector<double> _waterHeight)
+	Model(size_t _sizeX, size_t _sizeY, double _deltaT, vector<double> _terrainHeight, vector<double> _waterHeight)
 		: sizeX(_sizeX), sizeY(_sizeY), deltaT(_deltaT), terrainHeight(_terrainHeight), waterHeight(_waterHeight)
 	{}
 
 	~Model() {}
 
-	void SetSizeX(const unsigned int sizeX);
-	unsigned int GetSizeX() const;
-	void SetSizeY(const unsigned int sizeY);
-	unsigned int GetSizeY() const;
+	void SetSizeX(const size_t sizeX);
+	size_t GetSizeX() const;
+	void SetSizeY(const size_t sizeY);
+	size_t GetSizeY() const;
 	void SetDeltaT(const double deltaT);
 	double GetDeltaT() const;
 	void SetTerrainHeight(const vector<double> terrainHeight);
@@ -35,7 +35,7 @@ public:
 	virtual void InitDevice() = 0;
 	virtual void SendAllDataToDevice() = 0;
 	virtual void PreparationForSimulaion() = 0;
-	virtual void RunSimulation(const unsigned int step) = 0;
+	virtual void RunSimulation(const size_t step) = 0;
 	virtual void GetResultFromDevice() = 0;
 	virtual void FreeAllData() = 0;
 };

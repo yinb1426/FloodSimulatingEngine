@@ -1,21 +1,21 @@
 #include "Model.h"
 
-void Model::SetSizeX(const unsigned int sizeX)
+void Model::SetSizeX(const size_t sizeX)
 {
     this->sizeX = sizeX;
 }
 
-unsigned int Model::GetSizeX() const
+size_t Model::GetSizeX() const
 {
     return this->sizeX;
 }
 
-void Model::SetSizeY(const unsigned int sizeY)
+void Model::SetSizeY(const size_t sizeY)
 {
     this->sizeY = sizeY;
 }
 
-unsigned int Model::GetSizeY() const
+size_t Model::GetSizeY() const
 {
     return this->sizeY;
 }
