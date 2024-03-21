@@ -32,11 +32,11 @@ public:
 	vector<double> GetWaterHeight() const;
 
 public:
-	virtual void InitDevice() = 0;
-	virtual void SendAllDataToDevice() = 0;
-	virtual void PreparationForSimulaion() = 0;
-	virtual void RunSimulation(const size_t step) = 0;
-	virtual void GetResultFromDevice() = 0;
-	virtual void FreeAllData() = 0;
+	virtual void InitDevice() {};
+	virtual void SendAllDataToDevice() {};
+	virtual void PreparationForSimulaion() {};
+	virtual void RunSimulation(const size_t step) {};
+	virtual void GetResultFromDevice() {};
+	virtual void FreeAllData() {};
 };
 

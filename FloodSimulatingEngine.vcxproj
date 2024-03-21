@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Project.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="VirtualPipelineModel.cu" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Drain.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Project.h" />
     <ClInclude Include="VirtualPipelineModel.cuh" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VPMCalculator.cuh" />

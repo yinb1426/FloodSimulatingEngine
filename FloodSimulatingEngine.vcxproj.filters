@@ -21,6 +21,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Project.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="VirtualPipelineModel.cu">
@@ -50,6 +53,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Dam.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Project.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
